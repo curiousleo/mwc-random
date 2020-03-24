@@ -39,6 +39,7 @@ library
                , time
                , vector         >= 0.7
                , math-functions >= 0.2.1.0
+               , random >= 1.2
 
   ghc-options: -Wall -funbox-strict-fields -fwarn-tabs
 

@@ -4,3 +4,7 @@ packages:
 
 package mwc-random-bench
   tests:      true
+
+flags:
+  splitmix:
+    random: False

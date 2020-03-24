@@ -1,6 +1,6 @@
-{-# LANGUAGE BangPatterns, CPP, DeriveDataTypeable, FlexibleContexts,
-    MagicHash, Rank2Types, ScopedTypeVariables, TypeFamilies, UnboxedTuples
-    #-}
+{-# LANGUAGE CPP, DeriveDataTypeable, FlexibleContexts, FlexibleInstances,
+    MagicHash, MultiParamTypeClasses, Rank2Types, ScopedTypeVariables,
+    TypeFamilies, UnboxedTuples #-}
 -- |
 -- Module    : System.Random.MWC
 -- Copyright : (c) 2009-2012 Bryan O'Sullivan
@@ -117,6 +117,7 @@ import qualified Control.Exception as E
 import Foreign.Ptr
 import Foreign.C.Types
 #endif
+import qualified System.Random as R
 import System.Random.MWC.SeedSource
 
 
@@ -409,6 +410,14 @@ restore :: PrimMonad m => Seed -> m (Gen (PrimState m))
 restore (Seed s) = Gen `liftM` G.thaw s
 {-# INLINE restore #-}
 
+instance (s ~ PrimState m, PrimMonad m) => R.MonadRandom (Gen s) m where
+  newtype Frozen (Gen s) = FrozenGen Seed
+  thawGen (FrozenGen s) = restore s
+  freezeGen = fmap FrozenGen . save
+  uniformWord8 = uniform
+  uniformWord16 = uniform
+  uniformWord32 = uniformWord32
+  uniformWord64 = uniform
 
 -- | Seed a PRNG with data from the system's fast source of
 -- pseudo-random numbers (\"@\/dev\/urandom@\" on Unix-like systems or
